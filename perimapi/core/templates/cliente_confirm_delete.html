@@ -1,0 +1,17 @@
+{%extends 'base.html'%}
+
+{%block content%}
+<div class="container mt-3">
+	<form method="post" class="card text-center bg-info-subtle">
+		{% csrf_token %}
+		<h2 class="card-title fw-bold">DELEÇÃO DE CLIENTE</h2>
+		<p class="card-text fw-bold">Tem Certeza em Deletar o Cliente "{{cliente.nome}}"?</p>
+		<p class="card-text"><small class="text-body-secondary fw-bold text-danger" style="text-decoration: underline;">Todas as Entregas e Endereços vinculados a esse Cliente serão Deletadas</small></p>
+		<p class="form-buttons">
+			<input type="submit" class="btn bg-danger text-white" value="Delete">
+			<a href="{% url 'clientes'%}" class="btn btn-primary">Cancel</a>
+		</p>
+	</form>
+</div>
+
+{%endblock content%}

@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
+
+<form enctype="multipart/form-data" class="container" method="post" id="entrega_form"
+    data-enderecos-url="{% url 'ajax_load_enderecos' %}">
+    {% csrf_token %}
+    <!-- main form start --- in our case product form -->
+    <div class="card">
+        <div class="card-header card-header-secondary">
+            <h4 class="card-title">{% if entrega %} Atualizar {%else %} Adicionar {%endif%} Entrega</h4>
+        </div>
+
+        <div class="form-group card-body">
+            <label>{{form.cliente.label}}</label>
+            {% if form.cliente.field.required %}
+            <span style="color: red;" class="required">*</span>
+            {% endif %}
+
+            {{form.cliente}}
+
+            {% if form.cliente.help_text %}
+            <small style="color: grey">{{ form.cliente.help_text }}</small>
+            {% endif %}
+            {% for error in form.cliente.errors %}
+            <p style="color: red">{{ error }}</p>
+            {% endfor %}
+        </div>
+        <div class="form-group card-body">
+            <label>{{form.endereco.label}}</label>
+            {% if form.endereco.field.required %}
+            <span style="color: red;" class="required">*</span>
+            {% endif %}
+
+            {{form.endereco}}
+
+            {% if form.endereco.help_text %}
+            <small style="color: grey">{{ form.endereco.help_text }}</small>
+            {% endif %}
+            {% for error in form.endereco.errors %}
+            <p style="color: red">{{ error }}</p>
+            {% endfor %}
+        </div>
+        <div class="form-group card-body">
+            <label>{{form.nome_do_embalador.label}}</label>
+            {% if form.nome_do_embalador.field.required %}
+            <span style="color: red;" class="required">*</span>
+            {% endif %}
+
+            {{form.nome_do_embalador}}
+
+            {% if form.nome_do_embalador.help_text %}
+            <small style="color: grey">{{ form.nome_do_embalador.help_text }}</small>
+            {% endif %}
+            {% for error in form.nome_do_embalador.errors %}
+            <p style="color: red">{{ error }}</p>
+            {% endfor %}
+        </div>
+        <div class="form-group card-body">
+            <label>{{form.numero_nfce.label}}</label>
+            {% if form.numero_nfce.field.required %}
+            <span style="color: red;" class="required">*</span>
+            {% endif %}
+
+            {{form.numero_nfce}}
+
+            {% if form.numero_nfce.help_text %}
+            <small style="color: grey">{{ form.numero_nfce.help_text }}</small>
+            {% endif %}
+            {% for error in form.numero_nfce.errors %}
+            <p style="color: red">{{ error }}</p>
+            {% endfor %}
+        </div>
+        <div class="form-group card-body">
+            <label>{{form.data_compra.label}}</label>
+            {% if form.data_compra.field.required %}
+            <span style="color: red;" class="required">*</span>
+            {% endif %}
+
+            {{form.data_compra}}
+
+            {% if form.data_compra.help_text %}
+            <small style="color: grey">{{ form.data_compra.help_text }}</small>
+            {% endif %}
+            {% for error in form.data_compra.errors %}
+            <p style="color: red">{{ error }}</p>
+            {% endfor %}
+        </div>
+        <div class="form-group card-body">
+            <label>{{form.data_entrega.label}}</label>
+            {% if form.data_entrega.field.required %}
+            <span style="color: red;" class="required">*</span>
+            {% endif %}
+
+            {{form.data_entrega}}
+
+            {% if form.data_entrega.help_text %}
+            <small style="color: grey">{{ form.data_entrega.help_text }}</small>
+            {% endif %}
+            {% for error in form.data_entrega.errors %}
+            <p style="color: red">{{ error }}</p>
+            {% endfor %}
+        </div>
+        <div class="form-group card-body">
+            <label>{{form.hora_entrega.label}}</label>
+            {% if form.hora_entrega.field.required %}
+            <span style="color: red;" class="required">*</span>
+            {% endif %}
+
+            {{form.hora_entrega}}
+
+            {% if form.hora_entrega.help_text %}
+            <small style="color: grey">{{ form.hora_entrega.help_text }}</small>
+            {% endif %}
+            {% for error in form.hora_entrega.errors %}
+            <p style="color: red">{{ error }}</p>
+            {% endfor %}
+        </div>
+        <div class="form-group card-body">
+            <label>{{form.quantidade.label}}</label>
+            {{form.quantidade}}
+        </div>
+
+    </div>
+
+
+
+
+    {% with item_formset as formset %}
+    {{ formset.management_form }}
+    <script type="text/html" id="itens-template">
+
+            <tr id="itens-__prefix__" class= hide_all>
+                {% for fields in formset.empty_form.hidden_fields %}
+                    {{ fields }}
+                {% endfor %}
+            
+                {% for fields in formset.empty_form.visible_fields %}
+                    <td>{{fields}}</td>
+                {% endfor %}
+            </tr>
+        </script>
+
+    <div class="table-responsive card mt-4">
+        <div class="card-header card-header-secondary">
+            <h4 class="card-title">Adicionar Itens</h4>
+        </div>
+        <table class="table card-header">
+            <thead class="text-secondary">
+                <th>Produto <span style="color: red;" class="required">*</span></th>
+                <th>Deletar?</th>
+            </thead>
+            <tbody id="item-itens"> <!-- id="item-inlineformsetname" -->
+                <!-- formset non forms errors -->
+                {% for error in formset.non_form_errors %}
+                <span style="color: red">{{ error }}</span>
+                {% endfor %}
+                {% for formss in formset %}
+                {{ formss.management_form }}
+                <tr id="itens-{{ forloop.counter0 }}" class=hide_all> <!-- id="inlineformsetname-counter" -->
+                    {{ formss.id }}
+                    {% for field in formss.visible_fields %}
+                    <td>
+                        {{field}}
+                        {% for error in field.errors %}
+                        <span style="color: red">{{ error }}</span>
+                        {% endfor %}
+
+                        {% comment %} {{ field.DELETE }} {% endcomment %}
+                    </td>
+                    {% endfor %}
+                    {% comment %} for delete {% endcomment %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="#" id="add-item-button" class="btn btn-secondary add-itens">
+            <i class="bi bi-file-earmark-plus" style="font-size: 1.5rem;"></i>
+        </a>
+    </div>
+    {% endwith %}
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-secondary btn-block">Submit</button>
+        <a href="{% url 'entregas'%}" class="btn btn-warning">Cancelar</a>
+    </div>
+</form>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("add-item-button").addEventListener("click", (e) => {
+            e.preventDefault();
+            let count = document.getElementById('item-itens').children.length;
+            const tmplMarkup = document.getElementById('itens-template').innerHTML;
+            const compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+            document.getElementById('item-itens').insertAdjacentHTML('beforeend', compiledTmpl);
+
+            // update form count
+            document.getElementById('id_itens_entrega-TOTAL_FORMS').setAttribute('value', count + 1)
+        })
+    });
+
+    $("#id_cliente").change(function () {
+        var url = $("#entrega_form").attr("data-enderecos-url");  // get the url of the `load_cities` view
+        var clienteId = $(this).val();  // get the selected country ID from the HTML input
+
+        $.ajax({                       // initialize an AJAX request
+            url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+            data: {
+                'cliente': clienteId       // add the country id to the GET parameters
+            },
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+                $("#id_endereco").html(data);  // replace the contents of the city input with the data that came from the server
+            }
+        });
+
+    });
+</script>
+
+{% endblock content %}

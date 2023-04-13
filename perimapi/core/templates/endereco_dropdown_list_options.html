@@ -1,0 +1,4 @@
+<option value="">---------</option>
+{% for endereco in enderecos %}
+<option value="{{ endereco.pk }}">{{ endereco.rua }}</option>
+{% endfor %}
