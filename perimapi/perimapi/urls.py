@@ -15,11 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic.base import RedirectView
 
 from core import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', RedirectView.as_view(url='accounts/login/'), name='home'),
 
     path('clientes/', views.listaDeClientes, name='clientes'),
     path('clientes/adicionar/', views.ClienteCreate.as_view(), name='create_cliente'),
